@@ -1,0 +1,34 @@
+/*
+ * サイト全体のカスタムスタイル。
+ *
+ * このファイルは Docker Compose のオーバーレイマウントで
+ * /ssg/docs/stylesheets/extra.css として Zensical から見える。
+ * zensical.toml の extra_css で読み込まれる。
+ *
+ * 実サイト側で必要になったスタイルはここに追記していく。テンプレート初期状態では
+ * 「読み込まれていることが確認できる」最小の記述だけを置いている。
+ */
+
+:root {
+  /* テンプレート用のダミー変数。実プロジェクトでは各サイトのブランドカラーに置き換える。 */
+  --site-accent-color: #3f6ad8;
+}
+
+/* 本文中リンクの下線をやや控えめに（例示: 実プロジェクトでの上書きの起点） */
+.md-content a:not(.md-button) {
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+/* ロゴを全幅で表示する（テーマ既定は狭幅で非表示）。
+   ハンバーガーはテーマ既定のまま。広幅ではサイドバーが常時表示で
+   トグルが機能しないため、上書きして表示させない。 */
+.md-header__button.md-logo {
+  display: inline-flex;
+}
+
+/* ドロワー見出しのサイト名リンク。見た目は見出しのまま（色・太さを継承）。 */
+.md-nav__title-link {
+  color: inherit;
+  text-decoration: none;
+}

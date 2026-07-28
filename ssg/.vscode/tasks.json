@@ -1,0 +1,53 @@
+{
+  // Zensical の起動タスク。
+  // これらは PATH 上の `zensical`（コンテナ内では /usr/local/bin/zensical のラッパー）を
+  // 呼ぶため、serve/build の前に docs/sitemap.md から nav が自動再生成される。
+  // 執筆者は docs/sitemap.md だけを編集すればよく、zensical.toml の nav は手で触らない。
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Zensical: serve",
+      "type": "shell",
+      "command": "zensical",
+      "args": ["serve"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Zensical: build",
+      "type": "shell",
+      "command": "zensical",
+      "args": ["build"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      // nav だけを手動で再生成したいとき用（ビルドはしない）。
+      "label": "Zensical: nav を再生成 (sitemap.md → zensical.toml)",
+      "type": "shell",
+      "command": "python3",
+      "args": ["scripts/gen_nav.py", "--write"],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

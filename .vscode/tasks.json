@@ -1,0 +1,82 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "コンテナビルド",
+      "detail": "Zensical のコンテナイメージをビルドする（初回・Dockerfile 更新時に実行）",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "compose",
+        "build",
+        "ssg"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "コンテナ起動",
+      "detail": "Zensical のコンテナをバックグラウンドで起動する",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "compose",
+        "up",
+        "-d",
+        "ssg"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "プレビュー起動",
+      "detail": "Zensical serve を起動する。ブラウザで http://localhost:8001 を開いて確認する",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-c",
+        "docker compose exec ssg uv run zensical serve --dev-addr 0.0.0.0:8001 2>&1 | sed -e 's#http://0\\.0\\.0\\.0:#http://localhost:#g'"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "コンテナ停止",
+      "detail": "Zensical のコンテナを停止する",
+      "type": "shell",
+      "command": "docker",
+      "args": [
+        "compose",
+        "stop",
+        "ssg"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+services:
+  ssg:
+    build:
+      context: ./ssg
+      dockerfile: Dockerfile
+    volumes:
+      # Zensicalプロジェクトの構成ファイル
+      - ./ssg/zensical.toml:/ssg/zensical.toml
+      - ./ssg/pyproject.toml:/ssg/pyproject.toml
+      - ./ssg/uv.lock:/ssg/uv.lock
+      - ./ssg/.python-version:/ssg/.python-version
+      - ./ssg/overrides:/ssg/overrides
+      # 開発環境の設定（VSCode / Dev Containers / Git / Docker / Claude Code）
+      - ./ssg/.vscode:/ssg/.vscode
+      - ./ssg/.devcontainer:/ssg/.devcontainer
+      - ./ssg/.gitignore:/ssg/.gitignore
+      - ./ssg/Dockerfile:/ssg/Dockerfile
+      - ./ssg/CLAUDE.md:/ssg/CLAUDE.md
+      - ./ssg/notes:/ssg/notes
+      - ./ssg/scripts:/ssg/scripts
+      - ./ssg/site:/ssg/site
+      - ./ssg/README.md:/ssg/README.md
+      # 執筆コンテンツ
+      - ./docs:/ssg/docs
+      # ssg/assets/ 配下を docs 配下に重ね着
+      - ./ssg/assets/stylesheets:/ssg/docs/stylesheets
+      - ./ssg/assets/javascripts:/ssg/docs/javascripts
+      # 仮想環境を名前付きボリュームで隔離
+      - ssg-venv:/ssg/.venv
+      # Claude Code の対話履歴・セッションログを永続化
+      - ssg-claude:/root/.claude
+    ports:
+      # ホストから zensical serve をプレビューするための転送先ポート
+      # Dev Container 接続時は 8000 番を使用（VSCode が自動フォワード）
+      - "8001:8001"
+    tty: true
+
+volumes:
+  ssg-venv:
+  ssg-claude:

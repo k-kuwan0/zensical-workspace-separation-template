@@ -1,0 +1,91 @@
+# ============================================================================
+# Zensical workspace separation template - zensical.toml
+#
+# サイトの基本設定・ナビゲーション・テーマ・追加アセットを定義する。
+# nav は docs/sitemap.md から scripts/gen_nav.py で自動生成される
+# （SITEMAP BEGIN/END マーカー間だけが再生成対象）。手で編集しない。
+# ============================================================================
+
+[project]
+
+site_name = "Zensical Workspace Separation Template"
+site_description = "執筆者と静的サイト管理者の関心を分離する Zensical テンプレート"
+site_author = "your name"
+site_url = "http://localhost:8001/"
+
+copyright = "© Zensical Workspace Separation Template"
+
+# ### SITEMAP BEGIN ###
+# nav は docs/sitemap.md から自動生成される。手で編集しない。
+# 生成: `python scripts/gen_nav.py --write`（zensical serve/build 時にラッパーが自動実行）
+nav = [
+  "README.md",
+  "sitemap.md",
+
+  { "はじめに" = [
+    "getting-started/README.md",
+    "getting-started/installation.md",
+    "getting-started/configuration.md",
+  ] },
+
+  { "ガイド" = [
+    "guides/README.md",
+    "guides/writing.md",
+    "guides/deployment.md",
+  ] },
+]
+# ### SITEMAP END ###
+
+# extra_css / extra_javascript のパスは docs_dir 相対。
+# ssg/assets/ 配下は docker-compose のオーバーレイマウントで
+# /ssg/docs/stylesheets, /ssg/docs/javascripts として見える。
+extra_css = [
+  "stylesheets/extra.css",
+]
+
+extra_javascript = [
+  "https://unpkg.com/tablesort@5.3.0/dist/tablesort.min.js",
+  "javascripts/tablesort.js",
+]
+
+# ----------------------------------------------------------------------------
+# テーマ設定
+# ----------------------------------------------------------------------------
+[project.theme]
+name = "material"
+custom_dir = "overrides"
+language = "ja"
+
+features = [
+  "content.code.copy",
+  "search.highlight",
+  "search.share",
+  "search.suggest",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+[project.theme.palette.toggle]
+icon = "material/brightness-7"
+name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+[project.theme.palette.toggle]
+icon = "material/brightness-4"
+name = "Switch to light mode"
+
+# ----------------------------------------------------------------------------
+# Markdown 拡張
+# ----------------------------------------------------------------------------
+[project.markdown_extensions]
+"admonition" = {}
+"attr_list" = {}
+"md_in_html" = {}
+"toc" = { permalink = true }
+"pymdownx.details" = {}
+"pymdownx.superfences" = {}
+"pymdownx.tabbed" = { alternate_style = true }
+"pymdownx.tasklist" = { custom_checkbox = true }

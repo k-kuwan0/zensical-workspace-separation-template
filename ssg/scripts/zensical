@@ -1,0 +1,55 @@
+#!/bin/sh
+# zensical コマンドのラッパー。
+#
+# 目的: `zensical serve` / `zensical build` の実行前に、docs/sitemap.md から
+# zensical.toml の nav を自動再生成する。これにより執筆者・CI・DevContainer の
+# いずれの経路から zensical を叩いても、サイドバー（nav）が常に sitemap.md と
+# 同期される（nav の手書き二重管理を解消する）。
+#
+# 仕込み方: Dockerfile でこのファイルを /usr/local/bin/zensical に配置する。
+# /usr/local/bin は PATH 上で .venv/bin より前方にあるため、`zensical` はまず
+# このラッパーに解決され、本物へ委譲される。呼び出し側のコマンドは変更不要。
+#
+# 設計メモ:
+# - nav 生成本体は Python (scripts/gen_nav.py)。標準ライブラリのみで、zensical と
+#   同じ Python インタプリタで動くため実質バージョン非依存。ラッパー自体は sh で
+#   薄く保ち、Python バージョンに左右されないようにしている。
+# - nav 生成が失敗してもビルド/サーブは続行する（警告のみ）。生成器のバグで
+#   サイト配信全体が止まる事態を避けるため。
+set -eu
+
+# このラッパーの所在に依存せず、プロジェクトルートを固定で解決する。
+PROJECT_ROOT="/ssg"
+GEN_NAV="${PROJECT_ROOT}/scripts/gen_nav.py"
+
+# 本物の zensical を呼ぶコマンド。uv 経由で解決することで .venv の再生成にも耐える。
+# uv が無い環境向けに .venv/bin/zensical へフォールバックする。
+run_real_zensical() {
+  if command -v uv >/dev/null 2>&1; then
+    exec uv run --project "${PROJECT_ROOT}" zensical "$@"
+  elif [ -x "${PROJECT_ROOT}/.venv/bin/zensical" ]; then
+    exec "${PROJECT_ROOT}/.venv/bin/zensical" "$@"
+  else
+    echo "zensical(wrapper): 本物の zensical が見つかりません" >&2
+    exit 127
+  fi
+}
+
+# serve / build のときだけ nav を再生成する。
+case "${1:-}" in
+  serve | build)
+    if [ -f "${GEN_NAV}" ]; then
+      echo "zensical(wrapper): sitemap.md から nav を再生成します..." >&2
+      # 失敗してもビルドは止めない（警告に留める）。
+      if command -v uv >/dev/null 2>&1; then
+        uv run --project "${PROJECT_ROOT}" python "${GEN_NAV}" --write >&2 \
+          || echo "zensical(wrapper): nav 再生成に失敗しました（既存の nav のまま続行します）" >&2
+      else
+        python3 "${GEN_NAV}" --write >&2 \
+          || echo "zensical(wrapper): nav 再生成に失敗しました（既存の nav のまま続行します）" >&2
+      fi
+    fi
+    ;;
+esac
+
+run_real_zensical "$@"

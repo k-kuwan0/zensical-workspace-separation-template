@@ -1,0 +1,22 @@
+{
+    "name": "SSG",
+    "service": "ssg",
+    "runServices": [
+        "ssg"
+    ],
+    "workspaceFolder": "/ssg",
+    "dockerComposeFile": "../../docker-compose.yaml",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "tamasfe.even-better-toml",
+                "streetsidesoftware.code-spell-checker",
+                "Anthropic.claude-code",
+                "ms-python.python",
+                "ms-python.debugpy",
+                "ms-azuretools.vscode-docker",
+                "samuelcolvin.jinjahtml"
+            ]
+        }
+    }
+}

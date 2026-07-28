@@ -1,0 +1,30 @@
+{
+  "editor.minimap.enabled": false,
+  "editor.fontFamily": "'HackGen Console NF', 'HackGen Console', monospace",
+  "editor.renderWhitespace": "boundary",
+  "editor.guides.bracketPairs": true,
+  "editor.lineHeight": 1.5,
+  "editor.fontSize": 12,
+  "editor.tabSize": 2,
+  "editor.rulers": [
+    80,
+    120
+  ],
+  "editor.defaultFormatter": null,
+  "[dockerfile]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-azuretools.vscode-docker",
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+  },
+  "[toml]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "tamasfe.even-better-toml"
+  },
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "files.associations": {
+    "**/overrides/**/*.html": "jinja-html"
+  }
+}

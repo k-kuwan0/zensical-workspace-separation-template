@@ -1,0 +1,48 @@
+# サンプル: Zensical をコンテナビルドして site/ を生成する GitHub Actions ワークフロー。
+#
+# このリポジトリの docker-compose.yaml では、ローカル・CI どちらでも同じ
+# コンテナで `zensical build` を叩けるように設計している。
+# ssg/site/ は bind mount しているため、コンテナ側の書き出し結果が
+# そのままランナー上の ./ssg/site/ に出力される。
+#
+# デプロイ先（S3 / Cloudflare Pages / GitHub Pages 等）はプロジェクトごとに
+# 異なるため、このテンプレートでは「ビルドまで」を実演する。
+# 実運用では以下のいずれかを追加する:
+#   - actions/upload-artifact でビルド結果を成果物化
+#   - 各種デプロイアクション（aws s3 sync 等）で公開先へ同期
+name: Build Zensical site
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - 'ssg/**'
+      - 'docker-compose.yaml'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - name: Build with Docker Compose
+        # scripts/zensical ラッパーが serve/build 前に docs/sitemap.md から
+        # nav を自動再生成する。CI 上でも同じ挙動になる。
+        run: docker compose run --rm ssg zensical build
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: site
+          path: ssg/site
+          if-no-files-found: error
+          retention-days: 7

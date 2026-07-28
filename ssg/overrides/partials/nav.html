@@ -1,0 +1,35 @@
+{# Zensical デフォルトの nav.html を上書き。目的は 2 点。
+   1. ドロワー見出しのサイト名をリンクにする（デフォルトはロゴのみリンクで
+      サイト名は label 直下の生テキストだった）。
+   2. リンク先を base_url に統一し、常にトップへ戻るようにする。 #}
+
+{% import "partials/nav-item.html" as item with context %}
+{% set class = "md-nav md-nav--primary" %}
+{% if "navigation.tabs" in features %}
+  {% set class = class ~ " md-nav--lifted" %}
+{% endif %}
+{% if "toc.integrate" in features %}
+  {% set class = class ~ " md-nav--integrated" %}
+{% endif %}
+<nav class="{{ class }}" aria-label="{{ lang.t('nav') }}" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    {# ロゴとサイト名をまとめて 1 つのリンクにする。 #}
+    <a href="{{ base_url }}" title="{{ config.site_name | e }}" class="md-nav__button md-logo" aria-label="{{ config.site_name }}" data-md-component="logo">
+      {% include "partials/logo.html" %}
+    </a>
+    <a href="{{ base_url }}" class="md-nav__title-link">
+      {{ config.site_name }}
+    </a>
+  </label>
+  {% if config.repo_url %}
+    <div class="md-nav__source">
+      {% include "partials/source.html" %}
+    </div>
+  {% endif %}
+  <ul class="md-nav__list" data-md-scrollfix>
+    {% for nav_item in nav.items %}
+      {% set path = "__nav_" ~ loop.index %}
+      {{ item.render(nav_item, path, 1) }}
+    {% endfor %}
+  </ul>
+</nav>
