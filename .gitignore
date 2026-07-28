@@ -1,0 +1,8 @@
+# Docker のオーバーレイマウントで作成される副作用ディレクトリ。
+# 実体は ssg/assets/ 配下にあり、コンテナ起動時にここにマウントされる。
+# ホスト側では空ディレクトリとして残るためコミット対象外にする。
+/docs/stylesheets/
+/docs/javascripts/
+
+# OS
+.DS_Store
