@@ -1,6 +1,8 @@
 # Zensical Workspace Separation Template
 
-Zensical で静的サイトを構築する際に、**執筆者領域（コンテンツ）** と **管理者領域（サイト構築設定）** を Docker マウントで分離するためのテンプレート。
+Zensical で静的サイトを構築する際に、**執筆者領域（コンテンツ）** と **管理者領域（サイト構築設定）** を Docker マウントで分離するためのテンプレート。  
+
+本リポジトリは https://dev.classmethod.jp/articles/zensical-workspace-separation-template/ でも解説しております。よろしければご参照ください。
 
 ## ディレクトリの意味
 
