@@ -1,0 +1,9 @@
+{
+  "pages": {
+    "top": { "path": "/" },
+    "configuration": { "path": "/getting-started/configuration/", "focus": "table" },
+    "writing": { "path": "/guides/writing/", "focus": "pre" }
+  },
+  "queries": ["執筆", "設定", "サイドバー", "マウント", "デプロイ"],
+  "sortTable": "/getting-started/configuration/"
+}

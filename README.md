@@ -38,3 +38,12 @@ VSCode でリポジトリを開き、`Cmd+Shift+P` → `Tasks: Run Task` から�
 - 管理者領域のセットアップ・デバッグ手順: [ssg/README.md](ssg/README.md)
 - Zensical 前提・ナビ運用ルール: [ssg/CLAUDE.md](ssg/CLAUDE.md)
 - 設計判断・運用メモ: [ssg/notes/](ssg/notes/)
+
+## Zensical のアップグレード
+
+Zensical はリリースの頻度が高いため、バージョンアップを同じ手順で回せるようにしている。
+
+- Claude Code で `/zensical-upgrade [目標バージョン]` を実行すると、リリースノートの確認から PR 本文の作成までを行う（[.claude/skills/zensical-upgrade/](.claude/skills/zensical-upgrade/SKILL.md)）
+- 新旧のビルド出力（ページ数・サイドバー・本文の HTML）は [ssg/scripts/compare_build.py](ssg/scripts/compare_build.py) で比較する
+- 見た目（ライト / ダーク）・日本語検索・自前 JS は [ssg/scripts/browser_check.mjs](ssg/scripts/browser_check.mjs) でヘッドレス Chrome を使って記録する。確認対象は [browser_check.config.json](ssg/scripts/browser_check.config.json) で変更できる
+- 記録は [ssg/notes/zensical-upgrade.md](ssg/notes/zensical-upgrade.md)

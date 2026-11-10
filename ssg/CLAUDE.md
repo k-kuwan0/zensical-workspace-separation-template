@@ -29,6 +29,7 @@
 
 - [README.md](README.md) — セットアップ手順・プレビュー起動
 - [notes/](notes/) — 設計判断・運用メモ
+- [notes/zensical-upgrade.md](notes/zensical-upgrade.md) — Zensical のアップグレード記録（手順はリポジトリ直下の `.claude/skills/zensical-upgrade/`）
 
 ## ナビゲーション（サイドバー / nav）の管理方針
 
