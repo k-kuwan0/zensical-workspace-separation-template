@@ -66,6 +66,6 @@
   overrides で検索バーを制御する場合は条件式に注意する。
 - **Zensical の "modern" テーマは従来の MkDocs Material と CSS 変数の使われ方が異なる**。
   色が効かないときは、配信中の `assets/stylesheets/modern/main.*.min.css` で実際の適用先変数を確認する。
-- Zensical 0.0.46 では `docs_dir` に `..` を含むパスや絶対パスの指定ができない
+- Zensical 0.1.0 時点でも `docs_dir` に `..` を含むパスや絶対パスの指定ができない
   （[Issue #68](https://github.com/zensical/zensical/issues/68)）。
   現状は Docker Compose のマウント設計で回避している。
