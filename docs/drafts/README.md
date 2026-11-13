@@ -24,7 +24,7 @@ title: 下書き
 1. ファイルを公開したい場所に移す（例: `git mv docs/drafts/new-page.md docs/guides/new-page.md`）
 2. `docs/sitemap.md` に `- [ラベル](guides/new-page.md)` を追加する
 
-`docs/sitemap.md` に `drafts/` のページを追加すると、本番ではリンク切れになります（サイドバーに 404 になる項目が出ます）。先にファイルを移してください。
+`docs/sitemap.md` に `drafts/` のページを追加すると、本番のビルドが「page does not exist」で失敗します。先にファイルを移してください。
 
 ## 注意
 

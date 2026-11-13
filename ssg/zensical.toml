@@ -42,6 +42,9 @@ draft_docs = """
 /drafts/
 """
 
+# 警告（リンク切れなど）が 1 件でもあればビルドを失敗させる。
+strict = true
+
 # extra_css / extra_javascript のパスは docs_dir 相対。
 # ssg/assets/ 配下は docker-compose のオーバーレイマウントで
 # /ssg/docs/stylesheets, /ssg/docs/javascripts として見える。
