@@ -12,6 +12,12 @@ title: 執筆
 
 `zensical serve` / `zensical build` を実行する際に、`docs/sitemap.md` から `zensical.toml` の `nav` が自動生成されるため、`nav` を手書きで更新する必要はありません。
 
+## 下書き
+
+書きかけのページは `docs/drafts/` に置きます。プレビューでは表示されますが、本番のサイトには出力されません。書き方と公開の手順は `docs/drafts/README.md` を見てください。
+
+公開ページから下書きへのリンクは張らないでください。本番では下書きが存在しないため、ビルドが失敗します。
+
 ## front matter
 
 各 Markdown ファイル冒頭に以下を書けます。

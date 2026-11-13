@@ -57,6 +57,9 @@
   （サイドバー未掲載の取りこぼし検出）。意図的に nav 外に置くものは `gen_nav.py` の
   `ORPHAN_EXCLUDE`（ディレクトリ単位・現状 `drafts`）または `ORPHAN_EXCLUDE_FILES`
   （ファイル単位）に追加する。
+- `docs/drafts/` は下書き置き場。`zensical.toml` の `draft_docs` で、serve では DRAFT 付きで表示し、
+  build では出力しない。`strict = true` なので、`sitemap.md` や公開ページから `drafts/` へリンクすると
+  build が「page does not exist」で失敗する（公開前に下書きを移す順番の取り違えを CI で止めるため）。
 
 ## Zensical 固有の注意点
 
