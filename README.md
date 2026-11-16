@@ -46,4 +46,5 @@ Zensical はリリースの頻度が高いため、バージョンアップを�
 - Claude Code で `/zensical-upgrade [目標バージョン]` を実行すると、リリースノートの確認から PR 本文の作成までを行う（[.claude/skills/zensical-upgrade/](.claude/skills/zensical-upgrade/SKILL.md)）
 - 新旧のビルド出力（ページ数・サイドバー・本文の HTML）は [ssg/scripts/compare_build.py](ssg/scripts/compare_build.py) で比較する
 - 見た目（ライト / ダーク）・日本語検索・自前 JS は [ssg/scripts/browser_check.mjs](ssg/scripts/browser_check.mjs) でヘッドレス Chrome を使って記録する。確認対象は [browser_check.config.json](ssg/scripts/browser_check.config.json) で変更できる
+- 新旧のスクリーンショットは [ssg/scripts/compare_shots.mjs](ssg/scripts/compare_shots.mjs) で左右に並べ、PR のコメントに貼る。確認結果の元データは `ssg/.upgrade-evidence/`（git 管理外）に置き、テキストは PR 本文に載せる
 - 記録は [ssg/notes/zensical-upgrade.md](ssg/notes/zensical-upgrade.md)

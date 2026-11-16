@@ -155,6 +155,9 @@ for (const [how, t] of Object.entries(tables)) {
 console.log(`出力: ${outDir}`);
 
 ws.close();
+// 終了を待たずにプロファイルを消すと、Chrome の書き込みと競合して ENOTEMPTY で失敗する
+const exited = new Promise((r) => chrome.once("exit", r));
 chrome.kill();
+await exited;
 rmSync(profile, { recursive: true, force: true });
 process.exit(0);

@@ -4,6 +4,9 @@
 # Python virtual environment
 .venv/
 
+# Zensical アップグレードの確認記録（PR に貼る元データ。.claude/skills/zensical-upgrade を参照）
+/.upgrade-evidence/
+
 # Caches
 .cache/
 __pycache__/
