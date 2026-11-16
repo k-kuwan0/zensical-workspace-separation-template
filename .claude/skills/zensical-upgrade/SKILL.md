@@ -1,6 +1,6 @@
 ---
 name: zensical-upgrade
-description: ssg/ の Zensical をバージョンアップする。リリースノートから破壊的変更・影響しうる変更・使えそうな新機能を洗い出し、Issue 作成、ブランチ作成、uv での更新、新旧ビルド出力の比較（ssg/scripts/compare_build.py）、ヘッドレス Chrome での見た目と日本語検索の比較（ssg/scripts/browser_check.mjs）、PR 本文の作成までを行う。「Zensical をアップグレード」「Zensical を上げたい」「zensical のバージョンアップ」で起動。
+description: ssg/ の Zensical をバージョンアップする。リリースノートから破壊的変更・影響しうる変更・使えそうな新機能を洗い出し、Issue 作成、ブランチ作成、uv での更新、新旧ビルド出力の比較（ssg/scripts/compare_build.py）、ヘッドレス Chrome での見た目と日本語検索の比較（ssg/scripts/browser_check.mjs）、PR 本文の作成、確認結果の根拠（ログ・JSON・新旧スクリーンショット）を PR に残すまでを行う。「Zensical をアップグレード」「Zensical を上げたい」「zensical のバージョンアップ」で起動。
 argument-hint: "[目標バージョン（省略時は最新リリース）]"
 ---
 
@@ -16,6 +16,10 @@ argument-hint: "[目標バージョン（省略時は最新リリース）]"
 - Zensical のリリース情報は `gh ... -R zensical/zensical` で取得する。
 - 記録は `ssg/notes/zensical-upgrade.md`、Issue テンプレートは `.github/ISSUE_TEMPLATE/Zensical_Upgrade.md`。
 - 見た目の確認対象（ページ・検索語・自前 JS）は `ssg/scripts/browser_check.config.json` で管理する。
+- **確認結果の根拠は PR に残す。** 実行した記録は `ssg/.upgrade-evidence/X.Y.Z/`（git 管理外。以下 `$EV`）に保存し、
+  テキスト（ビルドログ、`compare_build.py` の出力、`result.json`）は PR 本文の折りたたみに、
+  スクリーンショットは新旧を並べた画像にして PR のコメントに載せる。リポジトリにはコミットしない。
+  このディレクトリはコンテナにマウントされていないので、コンテナ内のコマンドの出力はホスト側でファイルに書き出す。
 
 ## 注意（ハマりやすい点）
 
@@ -97,16 +101,19 @@ gh issue create --title "Zensical を A.B.C から X.Y.Z にアップグレー�
 git switch main && git pull
 git switch -c feature/zensical-X.Y.Z
 
+EV=ssg/.upgrade-evidence/X.Y.Z && mkdir -p $EV   # 確認記録の置き場所（git 管理外）
+
 # コンテナ（止まっていれば docker compose up -d ssg）。ホスト側の git 操作でマウントが外れていることがあるので再起動しておく
 docker compose restart ssg
-docker compose exec -T ssg sh -c 'cd /ssg && zensical build && rm -rf /tmp/site-before && cp -r site /tmp/site-before'
+docker compose exec -T ssg sh -c 'cd /ssg && zensical build 2>&1' | tee $EV/build-before.log
+docker compose exec -T ssg sh -c 'cd /ssg && rm -rf /tmp/site-before && cp -r site /tmp/site-before'
 
 # 見た目と検索のベースライン（ホスト。ブラウザはホストの Chrome を使う）
 docker compose exec -d ssg sh -c 'cd /ssg && zensical serve -a 0.0.0.0:8001 > /tmp/serve.log 2>&1'
-node ssg/scripts/browser_check.mjs http://localhost:8001 <scratchpad>/check-before
+node ssg/scripts/browser_check.mjs http://localhost:8001 $EV/before
 ```
 
-ベースラインのビルドで警告が出ている場合は、内容を控えておく（アップグレード後に増えていないかを見るため）。
+ベースラインのビルドで警告が出ている場合は、`build-before.log` を見てアップグレード後に増えていないかを比べる。
 
 **ベースラインは必ずアップグレード前に取る。** 後から旧バージョンを入れ直そうとしても、Python 3.15 向けの wheel が無い
 依存（0.0.46 の `pyyaml` 等）のビルドに失敗することがある。どうしても必要な場合は、uv で Python 3.13 の別環境を作って入れる
@@ -116,7 +123,8 @@ node ssg/scripts/browser_check.mjs http://localhost:8001 <scratchpad>/check-befo
 
 ```bash
 docker compose exec -T ssg sh -c 'cd /ssg && uv add --dev "zensical>=X.Y.Z" && uv run zensical --version'
-docker compose exec -T ssg sh -c 'cd /ssg && zensical build && python3 scripts/compare_build.py /tmp/site-before site'
+docker compose exec -T ssg sh -c 'cd /ssg && zensical build 2>&1' | tee $EV/build-after.log
+docker compose exec -T ssg sh -c 'cd /ssg && python3 scripts/compare_build.py /tmp/site-before site' | tee $EV/compare_build.txt
 ```
 
 `git diff --stat` で `ssg/pyproject.toml` と `ssg/uv.lock` がホスト側にも反映されたことを確認する。
@@ -129,7 +137,8 @@ docker compose exec -T ssg sh -c 'cd /ssg && zensical build && python3 scripts/c
    （見出し、表、コードブロック等）が含まれていないかを重点的に見る。
    新しい UI 文言が日本語に翻訳されているか（`__config` の `translations`）もここで分かる。
 
-ページ増減またはサイドバー差分があると終了コード 1 になる。原因を調べてユーザーに報告する。
+ページ増減またはサイドバー差分があると終了コード 1 になる（`tee` に通すと終了コードは見えないので、出力の 1・2 で判断する）。
+原因を調べてユーザーに報告する。
 
 ### Step 6: 見た目と日本語検索を確認する
 
@@ -139,11 +148,13 @@ HTML の比較では、テーマ CSS と自前の CSS（`ssg/assets/stylesheets/
 ```bash
 docker compose restart ssg   # 旧バージョンの serve を止める
 docker compose exec -d ssg sh -c 'cd /ssg && zensical serve -a 0.0.0.0:8001 > /tmp/serve.log 2>&1'
-node ssg/scripts/browser_check.mjs http://localhost:8001 <scratchpad>/check-after
+node ssg/scripts/browser_check.mjs http://localhost:8001 $EV/after
+node ssg/scripts/compare_shots.mjs $EV/before $EV/after $EV/compare A.B.C X.Y.Z   # 新旧を左右に並べた画像
 ```
 
-- `page-*-{light,dark}.png` を Read で新旧並べて見比べる（ヘッダー、サイドバー、コードブロック、テーブル）。
-- `result.json` の検索ヒット件数を新旧で比べ、件数が大きく変わった語は `search-*.png` で上位の結果が妥当かを見る。
+- `$EV/compare/page-*-{light,dark}.png` を Read で見比べる（ヘッダー、サイドバー、コードブロック、テーブル）。
+  左が変更前、右が変更後。画像が完全に同じものは見出しに「（同一）」と出る。
+- `result.json` の検索ヒット件数を新旧で比べ、件数が大きく変わった語は `$EV/compare/search-*.png` で上位の結果が妥当かを見る。
   英語のまま表示される文言は、ベースラインでも同じか（今回のアップグレードで生じたものか）を区別する。
 - 自前 JS のテーブルソート（`tablesort.js`）が、直接開いた場合とサイドバーから遷移した場合の両方で「ソート OK」であること。
   テーマの `document$` に依存して初期化するため、UI の更新で壊れうる。NG なら `document$` の扱いがリリースノートで
@@ -191,6 +202,46 @@ PR 本文は次の構成で書く。確認結果には、確認したことを�
 
 - **（機能名）**（X.Y.Z）: （何ができるか）。このサイトでは（何に使えるか）。
 
+## 確認の記録
+確認結果の根拠です。スクリーンショット（左: 変更前 / 右: 変更後）は PR のコメントにあります。
+
+<details><summary>zensical build のログ（変更前 / 変更後）</summary>
+
+（$EV/build-before.log と $EV/build-after.log をコードブロックで貼る）
+</details>
+
+<details><summary>compare_build.py の出力</summary>
+
+（$EV/compare_build.txt をコードブロックで貼る）
+</details>
+
+<details><summary>browser_check.mjs の result.json（変更前 / 変更後）</summary>
+
+（$EV/before/result.json と $EV/after/result.json を json のコードブロックで貼る）
+</details>
+
 ## 関連リンク
 - close #（Issue 番号）
 ```
+
+「確認の記録」には、`$EV` のファイルを**加工せずにそのまま**貼る（要約は「確認結果」に書く）。
+PR 本文は 65,536 文字までなので、超える場合は `compare_build.py` の HTML 差分を `--top` で減らして取り直す。
+
+### Step 8: スクリーンショットを PR のコメントに載せる
+
+GitHub には画像を API（`gh` を含む）で PR に添付する手段が無い。比較画像は作成者（ユーザー）にブラウザで貼ってもらう。
+
+```bash
+printf '## スクリーンショット（左: 変更前 A.B.C / 右: 変更後 X.Y.Z）\n\n' | pbcopy   # コメントの見出し
+open $EV/compare      # Finder で比較画像のフォルダを開く
+gh pr view --web      # PR をブラウザで開く
+```
+
+ユーザーには「PR の一番下のコメント欄に見出しを貼り付け、`compare` フォルダの画像をすべて選んでドラッグ＆ドロップし、
+コメントしてください」と伝える。投稿されたら、画像が全部載っているかを確認する（`compare` 内の PNG の数と一致すること）。
+
+```bash
+gh pr view --json comments -q '.comments[-1].body' | grep -c 'user-attachments'
+```
+
+足りなければユーザーに伝えて追加してもらう。`$EV` はローカルにそのまま残してよい（PR に載った後は消しても困らない）。

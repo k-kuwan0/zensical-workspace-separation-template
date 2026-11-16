@@ -6,6 +6,8 @@ Zensical のバージョンアップの記録を管理者向けに残す。
 - Issue テンプレート: 「Zensical Upgrade」（`.github/ISSUE_TEMPLATE/Zensical_Upgrade.md`）
 - ビルド出力の比較: `ssg/scripts/compare_build.py`
 - 見た目・日本語検索・自前 JS の確認: `ssg/scripts/browser_check.mjs`（確認対象は `browser_check.config.json`）
+- 新旧スクリーンショットの比較画像: `ssg/scripts/compare_shots.mjs`
+- 確認結果の根拠: 各 PR に残す（ビルドログ・`compare_build.py` の出力・`result.json` は PR 本文、スクリーンショットは PR のコメント）。元データはローカルの `ssg/.upgrade-evidence/<バージョン>/`（git 管理外）
 - リリースノート: https://github.com/zensical/zensical/releases
 
 ---
